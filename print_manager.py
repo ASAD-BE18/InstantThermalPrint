@@ -2,7 +2,7 @@ import subprocess
 import re
 
 
-def call_gphoto(arguments):
+def _call_gphoto(arguments):
     """
     Extend the gphoto2 command with as many arguments as supplied.
     :param arguments: list of arguments.
@@ -18,7 +18,7 @@ def call_gphoto(arguments):
     return output
 
 
-def list_difference(list1, list2):
+def _list_difference(list1, list2):
     """
     Return the difference between list1 and list2 using set.
     :param list1: list1
@@ -40,15 +40,46 @@ def get_new_files():
     #       #9     IMG_8188.JPG               rd   496 KB image/jpeg
     # From this list I want to retain the numbers after the pound sign.
 
-    file_text_block = call_gphoto(["-L", "--new"])  # Get list of new files
-    current_files_on_sd = re.finditer("#([0-9]*)\s", file_text_block)
-    current_file_list = [matched_item.group(1) for matched_item in current_files_on_sd]
+    file_text_block = _call_gphoto(["-L", "--new"])  # Get list of new files
+    current_files_on_sd = re.finditer("#([0-9]+)\s.*(IMG_[0-9]*)+", file_text_block)
+    output_dict = {}
+    for matched_thing in current_files_on_sd:
+        output_dict[str(matched_thing.group(1))] = str(matched_thing.group(2)+".JPG")
+
+    current_file_list = output_dict.keys()
+    print(current_file_list)
 
     # Compare this list to the older list to see if new files were added...
-    new_file_list = list_difference(current_file_list, old_file_list)
-    # Return the numbers of the new files in a list.
+    new_file_list = _list_difference(current_file_list, old_file_list)
+    # Download new files
+    for new_file in new_file_list:
+        print("Downloading file " + str(new_file))
+        _call_gphoto(["-P", str(new_file)])
 
     return new_file_list
+
+
+def update_whitelist():
+    """
+    Function that adds the printed files to the whitelist to prevent re-printing.
+    """
+    pass
+
+
+def add_logo():
+    """
+    Function that adds the printed files to the whitelist to prevent re-printing.
+    """
+    pass
+
+
+def print_file(image_path):
+    p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
+                         stdout=subprocess.PIPE,
+                         shell=False)
+    output, _ = p.communicate()
+    return output
+    pass
 
 
 if __name__ == "__main__":
@@ -62,10 +93,11 @@ if __name__ == "__main__":
                     #13    IMG_8192.JPG               rd  2929 KB image/jpeg
                     #14    IMG_8193.JPG               rd  2930 KB image/jpeg
                     #15    IMG_8194.JPG               rd  2924 KB image/jpeg
-                 """
-    current_files_on_sd_test = re.finditer("#([0-9]*)\s", test_block)
-    current_file_list_test = [matched_item.group(1) for matched_item in current_files_on_sd]
-
-
-
-    #get_new_files()
+"""
+    t_current_files_on_sd = re.finditer("#([0-9]+)\s.*(IMG_[0-9]*)+", test_block)
+    t_output_dict = {}
+    for matched_thing in t_current_files_on_sd:
+        t_output_dict[str(matched_thing.group(1))] = str(matched_thing.group(2)+".JPG")
+    print(t_output_dict)
+    current_file_list = list(t_output_dict.keys())
+    print(current_file_list)
