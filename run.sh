@@ -1,3 +1,8 @@
 #!/bin/sh
 
-watch -n 4 python print_manager.py
+cd ~/InstantThermalPrint
+
+while true; do
+    python print_manager.py
+    sleep 5
+done

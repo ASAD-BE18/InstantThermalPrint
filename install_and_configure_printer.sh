@@ -18,6 +18,7 @@ sudo lpoptions -d ZJ-58
 
 sudo sed -i -e '$i \sleep 5' /etc/rc.local
 sudo sed -i -e '$i \sudo pkill -f gvfs' /etc/rc.local
-sudo sed -i -e '$i \cd ~/InstantThermalPrint/ && bash run.sh
+sudo sed -i -e '$i \cd ~/InstantThermalPrint/ && bash run.sh'
+sudo sed -i -e '$i \rm ~/InstantThermalPrint/whitelist.txt'
 
 echo "\n\n[:] Setup is complete..."
