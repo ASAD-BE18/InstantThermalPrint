@@ -111,6 +111,12 @@ def get_new_files():
 
 
 def print_file(image_path):
+    """
+    Send a print request to the printer, fit to page.
+    Afterwards, update the whitelist to prevent the file from printing again.
+    :param image_path: path to file
+    :return: Nothing
+    """
     p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
                          stdout=subprocess.PIPE,
                          shell=False)
@@ -119,6 +125,11 @@ def print_file(image_path):
 
 
 def remove_file(image_path):
+    """
+    Delete the file from the filesystem
+    :param image_path: path to file
+    :return: Nothing.
+    """
     if os.path.exists(image_path):
         os.remove(image_path)
 
