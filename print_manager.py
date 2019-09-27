@@ -1,10 +1,12 @@
 import subprocess
 import re
 import os.path
+import time
+
 from image_proccessor import *
 
 
-def _call_gphoto(arguments):
+def _call_gphoto(arguments, shell_usage=False):
     """
     Extend the gphoto2 command with as many arguments as supplied.
     :param arguments: list of arguments.
@@ -15,7 +17,7 @@ def _call_gphoto(arguments):
     print(command)
     p = subprocess.Popen(command,
                          stdout=subprocess.PIPE,
-                         shell=False)
+                         shell=shell_usage)
     output, _ = p.communicate()
     return output
 
@@ -106,9 +108,9 @@ def get_new_files(optional=None):
 
     # Download new files
     for new_file in new_file_list:
-        # print("Downloading file " + str(new_file))
-        # _call_gphoto(["-P", str(new_file)])
-        pass
+        print("Downloading file " + str(new_file))
+        _call_gphoto(["-P", str(new_file)], shell_usage=True)
+        time.sleep(1)
 
     return output_dict
 
@@ -138,7 +140,7 @@ if __name__ == "__main__":
                     #16    IMG_1137.JPG               rd
                  """
 
-    downloaded_images_dict = get_new_files(optional=test_block)
+    downloaded_images_dict = get_new_files()
 
     for image in downloaded_images_dict:
         # Do some processing on the image
