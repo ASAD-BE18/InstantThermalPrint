@@ -35,6 +35,8 @@ def process_image(image_path):
     add_logo(base_img, logo)
     base_img.save(output_path)
 
+    return output_path
+
 
 if __name__ == "__main__":
     process_image(test_file)

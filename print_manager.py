@@ -114,10 +114,10 @@ def get_new_files(optional=None):
 
 
 def print_file(image_path):
-    # p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
-    #                      stdout=subprocess.PIPE,
-    #                      shell=False)
-    # output, _ = p.communicate()
+    p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
+                         stdout=subprocess.PIPE,
+                         shell=False)
+    output, _ = p.communicate()
     update_whitelist(image_path)
 
 
@@ -142,7 +142,6 @@ if __name__ == "__main__":
 
     for image in downloaded_images_dict:
         # Do some processing on the image
-        add_logo(downloaded_images_dict[image])
-
+        processed_img = process_image(downloaded_images_dict[image])
         # Print the image
-        print_file(image)
+        print_file(processed_img)
