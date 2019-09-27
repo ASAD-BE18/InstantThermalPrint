@@ -7,9 +7,9 @@ template_file = "template_file.png"
 
 
 def adjust_brightness(base_img):
-    enhanced = ImageEnhance.Brightness(base_img)
-    enhanced.enhance(8)
-    return enhanced
+    enhanced_image = ImageEnhance.Brightness(base_img)
+    enhanced_image.enhance(1.5)
+    return enhanced_image
 
 
 def add_logo(base_img, overlay):
