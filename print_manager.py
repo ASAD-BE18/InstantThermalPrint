@@ -1,5 +1,7 @@
 import subprocess
 import re
+import os.path
+from image_proccessor import *
 
 
 def _call_gphoto(arguments):
@@ -25,10 +27,47 @@ def _list_difference(list1, list2):
     :param list2: list2
     :return: list that contains values that are only present in one of the lists.
     """
+    list1 = map(str.strip, list1)  # Strip all values in list1
+    list2 = map(str.strip, list2)  # Strip all values in list2
     return list(set(list1) - set(list2))
 
 
-def get_new_files():
+def create_whitelist():
+    """
+    Function creates whitelist to prevent re-printing.
+    """
+    with open("whitelist.txt", "w") as whitelist:
+        whitelist.write("\n")
+        whitelist.close()
+
+
+def update_whitelist(filename):
+    """
+    Function that adds the printed files to the whitelist to prevent re-printing.
+    """
+    with open("whitelist.txt", "a") as whitelist:
+        try:
+            whitelist.write(str(filename)+"\n")
+        finally:
+            whitelist.close()
+
+
+def get_whitelist():
+    """
+    Function that fetches all files from the whitelist.
+    """
+    current_whitelist = []
+    with open("whitelist.txt", "r") as whitelist:
+        try:
+            for line in whitelist.readlines():
+                current_whitelist.append(line)
+        finally:
+            whitelist.close()
+
+    return current_whitelist
+
+
+def get_new_files(optional=None):
     """
     Function that gets a list of files currently on the SD card of the camera,
     Checks if there are new files and downloads the new files.
@@ -40,50 +79,53 @@ def get_new_files():
     #       #9     IMG_8188.JPG               rd   496 KB image/jpeg
     # From this list I want to retain the numbers after the pound sign.
 
-    file_text_block = _call_gphoto(["-L", "--new"])  # Get list of new files
-    current_files_on_sd = re.finditer("#([0-9]+)\s.*(IMG_[0-9]*)+", file_text_block)
-    output_dict = {}
+    if optional is None:
+        file_text_block = _call_gphoto(["-L", "--new"])  # Get list of new files
+    else:
+        file_text_block = optional
+
+    # Parse the output of gphoto2 to get file names and numbers for downloading
+    current_files_on_sd = re.finditer(r"#([0-9]+)\s.*(IMG_[0-9]*)+", file_text_block)
+
+    # Hold this data in a dictionary, like so: "9" : "IMG_XYZ.JPG"
+    matched_dict = {}
     for matched_thing in current_files_on_sd:
-        output_dict[str(matched_thing.group(1))] = str(matched_thing.group(2)+".JPG")
+        matched_dict[str(matched_thing.group(1))] = str(matched_thing.group(2)+".JPG")
 
-    current_file_list = output_dict.keys()
-    print(current_file_list)
+    # Get current file list and old file lists
+    current_file_list = matched_dict.keys()
+    old_file_list = get_whitelist()
 
-    # Compare this list to the older list to see if new files were added...
+    # Compare the lists to find the new files
     new_file_list = _list_difference(current_file_list, old_file_list)
+
+    # Create the output dictionary
+    output_dict = {}
+    for file_id in new_file_list:
+        output_dict[str(file_id)] = matched_dict[str(file_id)]
+
     # Download new files
     for new_file in new_file_list:
-        print("Downloading file " + str(new_file))
-        _call_gphoto(["-P", str(new_file)])
+        # print("Downloading file " + str(new_file))
+        # _call_gphoto(["-P", str(new_file)])
+        pass
 
-    return new_file_list
-
-
-def update_whitelist():
-    """
-    Function that adds the printed files to the whitelist to prevent re-printing.
-    """
-    pass
-
-
-def add_logo():
-    """
-    Function that adds the printed files to the whitelist to prevent re-printing.
-    """
-    pass
+    return output_dict
 
 
 def print_file(image_path):
-    p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
-                         stdout=subprocess.PIPE,
-                         shell=False)
-    output, _ = p.communicate()
-    return output
-    pass
+    # p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
+    #                      stdout=subprocess.PIPE,
+    #                      shell=False)
+    # output, _ = p.communicate()
+    update_whitelist(image_path)
 
 
 if __name__ == "__main__":
-    old_file_list = []
+
+    if not os.path.exists("whitelist.txt"):
+        create_whitelist()
+
     # Test code:
     test_block = """
                     #8     IMG_8187.JPG               rd   493 KB image/jpeg
@@ -93,11 +135,14 @@ if __name__ == "__main__":
                     #13    IMG_8192.JPG               rd  2929 KB image/jpeg
                     #14    IMG_8193.JPG               rd  2930 KB image/jpeg
                     #15    IMG_8194.JPG               rd  2924 KB image/jpeg
-"""
-    t_current_files_on_sd = re.finditer("#([0-9]+)\s.*(IMG_[0-9]*)+", test_block)
-    t_output_dict = {}
-    for matched_thing in t_current_files_on_sd:
-        t_output_dict[str(matched_thing.group(1))] = str(matched_thing.group(2)+".JPG")
-    print(t_output_dict)
-    current_file_list = list(t_output_dict.keys())
-    print(current_file_list)
+                    #16    IMG_1137.JPG               rd
+                 """
+
+    downloaded_images_dict = get_new_files(optional=test_block)
+
+    for image in downloaded_images_dict:
+        # Do some processing on the image
+        add_logo(downloaded_images_dict[image])
+
+        # Print the image
+        print_file(image)
