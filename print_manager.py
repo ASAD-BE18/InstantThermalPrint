@@ -106,6 +106,7 @@ def get_new_files():
     for new_file in new_file_list:
         print("Downloading file #" + str(new_file))
         _call_gphoto(["-p", str(new_file).strip()])
+        update_whitelist(output_dict[str(new_file)])
 
     return output_dict
 
@@ -121,7 +122,7 @@ def print_file(image_path):
                          stdout=subprocess.PIPE,
                          shell=False)
     output, _ = p.communicate()
-    update_whitelist(image_path)
+    # update_whitelist(image_path)
 
 
 def remove_file(image_path):
