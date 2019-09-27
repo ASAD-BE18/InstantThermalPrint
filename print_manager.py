@@ -1,6 +1,6 @@
 import subprocess
 import re
-import os.path
+import os
 
 from image_proccessor import *
 
@@ -118,6 +118,11 @@ def print_file(image_path):
     update_whitelist(image_path)
 
 
+def remove_file(image_path):
+    if os.path.exists(image_path):
+        os.remove(image_path)
+
+
 if __name__ == "__main__":
 
     if not os.path.exists("whitelist.txt"):
@@ -131,3 +136,6 @@ if __name__ == "__main__":
 
         # Print the image
         print_file(processed_img)
+
+        # Remove the original file as it is not useful anymore
+        remove_file(downloaded_images_dict[image])
