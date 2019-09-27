@@ -3,7 +3,7 @@ from PIL import Image, ImageEnhance
 # Constants:
 resize_size = (1278, 864)  # Original size 5148x3456
 template_file = "template_file.png"
-test_file = r"C:\Users\Tubi\Desktop\IMG_6345.png"
+
 
 def adjust_brightness(base_img):
     enhanced = ImageEnhance.Brightness(base_img)
@@ -11,11 +11,11 @@ def adjust_brightness(base_img):
     return enhanced
 
 
-def add_logo(base_img, template_file):
+def add_logo(base_img, overlay):
     """
     Function that adds logo\watermark to the camera pictures
     """
-    base_img.paste(template_file, (0, 0), template_file)
+    base_img.paste(overlay, (0, 0), overlay)
     return base_img
 
 
@@ -39,4 +39,5 @@ def process_image(image_path):
 
 
 if __name__ == "__main__":
-    process_image(test_file)
+    # Don't call this
+    pass

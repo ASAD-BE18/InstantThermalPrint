@@ -1,7 +1,6 @@
 import subprocess
 import re
 import os.path
-import time
 
 from image_proccessor import *
 
@@ -69,7 +68,7 @@ def get_whitelist():
     return current_whitelist
 
 
-def get_new_files(optional=None):
+def get_new_files():
     """
     Function that gets a list of files currently on the SD card of the camera,
     Checks if there are new files and downloads the new files.
@@ -81,10 +80,7 @@ def get_new_files(optional=None):
     #       #9     IMG_8188.JPG               rd   496 KB image/jpeg
     # From this list I want to retain the numbers after the pound sign.
 
-    if optional is None:
-        file_text_block = _call_gphoto(["-L", "--new"])  # Get list of new files
-    else:
-        file_text_block = optional
+    file_text_block = _call_gphoto(["-L", "--new"])  # Get list of new files
 
     # Parse the output of gphoto2 to get file names and numbers for downloading
     current_files_on_sd = re.finditer(r"#([0-9]+)\s.*(IMG_[0-9]*)+", file_text_block)
@@ -108,9 +104,8 @@ def get_new_files(optional=None):
 
     # Download new files
     for new_file in new_file_list:
-        print("Downloading file " + str(new_file))
-        _call_gphoto(["-P", str(new_file)], shell_usage=True)
-        time.sleep(1)
+        print("Downloading file #" + str(new_file))
+        _call_gphoto(["-p", str(new_file).strip()])
 
     return output_dict
 
@@ -128,22 +123,11 @@ if __name__ == "__main__":
     if not os.path.exists("whitelist.txt"):
         create_whitelist()
 
-    # Test code:
-    test_block = """
-                    #8     IMG_8187.JPG               rd   493 KB image/jpeg
-                    #9     IMG_8188.JPG               rd   496 KB image/jpeg
-                    #10    IMG_8189.JPG               rd   741 KB image/jpeg
-                    #12    IMG_8191.JPG               rd  2912 KB image/jpeg
-                    #13    IMG_8192.JPG               rd  2929 KB image/jpeg
-                    #14    IMG_8193.JPG               rd  2930 KB image/jpeg
-                    #15    IMG_8194.JPG               rd  2924 KB image/jpeg
-                    #16    IMG_1137.JPG               rd
-                 """
-
     downloaded_images_dict = get_new_files()
 
     for image in downloaded_images_dict:
         # Do some processing on the image
         processed_img = process_image(downloaded_images_dict[image])
+
         # Print the image
         print_file(processed_img)
