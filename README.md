@@ -3,7 +3,8 @@ Code to run on PiZero, instantly print images from my camera onto thermal paper.
 
 Installation:
 ```
-sudo bash InstantThermalPrint/install_and_configure_printer.sh
+git clone https://github.com/g-bulgarit/InstantThermalPrint.git
+cd InstantThermalPrint && sudo bash install_and_configure_printer.sh
 ```
 Installation may take a while as it installs CUPS and required drivers...
 
