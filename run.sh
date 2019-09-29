@@ -1,9 +1,5 @@
 #!/bin/sh
 
-cd ~/InstantThermalPrint
-
-while true; do
-    sudo pkill -f gvfs
-    python print_manager.py
-    sleep 5
-done
+#cd ~/InstantThermalPrint
+sudo pkill -f gvfs  # Kill the gvfs processes...
+python main.py
