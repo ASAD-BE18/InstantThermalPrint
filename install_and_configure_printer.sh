@@ -1,19 +1,20 @@
 # Bash script to install prerequisits
-echo "[:] Updating apt-get\n\n"
-sudo apt-get update
+echo "\n[:] Updating apt-get\n\n"
+sudo apt-get update -yqq
 
-echo "[:] Installing Pre-reqs\n\n"
+echo "\n[:] Installing Pre-reqs\n\n"
 sudo apt-get install gphoto2 git cups wiringpi build-essential libcups2-dev libcupsimage2-dev -yqq
 
-echo "[:] Getting printer driver\n\n"
+echo "\n[:] Getting printer driver\n\n"
 git clone https://github.com/adafruit/zj-58
 cd zj-58
 make
 sudo ./install
 
-echo "[:] Setting printer parameters\n\n"
+echo "\n[:] Setting printer parameters\n\n"
+# ------------ Set serial baudrate according to printer, and AMA0 or USB0 depending on TTL or USB printer.
 sudo lpadmin -p ZJ-58 -E -v serial:/dev/ttyAMA0?baud=19600 -m zjiang/ZJ-58.ppd
-echo "[:] Setting printer to default\n\n"
+echo "\n[:] Setting printer to default\n\n"
 sudo lpoptions -d ZJ-58
 
 sudo sed -i -e '$i \sleep 5' /etc/rc.local
