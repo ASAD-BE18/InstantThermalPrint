@@ -3,7 +3,7 @@ from PIL import Image, ImageEnhance
 # Constants:
 # resize_size = (1278, 864)  # Original size 5148x3456
 resize_size = (852, 576)  # Original size 5148x3456
-template_file = "template_file.png"
+template_file = r"assets/template_file.png"
 
 
 def adjust_brightness(base_img):
