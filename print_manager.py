@@ -135,7 +135,7 @@ def remove_file(image_path):
         os.remove(image_path)
 
 
-def queue_and_print():
+def queue_and_print(channel=None):
     if not os.path.exists("whitelist.txt"):
         create_whitelist()
 
