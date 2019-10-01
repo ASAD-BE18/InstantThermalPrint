@@ -38,7 +38,7 @@ if __name__ == "__main__":
         GPIO.setup(button_pin, GPIO.IN)  # Set button as input
 
         # Set up a callback to call the queue and print function upon falling edge on button
-        GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=queue_and_print, bouncetime=500)
+        GPIO.add_event_detect(button_pin, GPIO.FALLING, callback=queue_and_print, bouncetime=1500)
 
         # ---------------- MAIN LOOP -------------------------------------------------------------|
         while True:
