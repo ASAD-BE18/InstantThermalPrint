@@ -24,6 +24,18 @@ def get_new_files():
     capture_image(image_path)
     return {1: image_path}
 
+def print_file(image_path):
+    """
+    Send a print request to the printer, fit to page.
+    Afterwards, update the whitelist to prevent the file from printing again.
+    :param image_path: path to file
+    :return: Nothing
+    """
+    p = subprocess.Popen(["lp", "-o", "fit-to-page", image_path],
+                         stdout=subprocess.PIPE,
+                         shell=False)
+    output, _ = p.communicate()
+
 def queue_and_print(channel=None):
     if not os.path.exists("whitelist.txt"):
         create_whitelist()
